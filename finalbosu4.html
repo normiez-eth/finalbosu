@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>finalbosu edit by normiez</title>
+    <style>
+        body{
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+            margin:20px;
+            color:white;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            line-height:1.5;
+            background-size:cover;
+            background-position:center center;
+            background-repeat:no-repeat;
+            background-attachment:fixed;
+            background-color: #36A4E3; /* Fallback solid blue background */
+        }
+        .container{
+            background-color:transparent;
+            padding:20px;
+            border-radius:8px;
+            width:90%;
+            max-width:500px;
+            text-align:center;
+            text-transform:uppercase;
+            color:white;
+        }
+        .header-image-container{
+            position:relative;
+            display:inline-block;
+            margin-bottom:20px;
+            max-width:100%;
+        }
+        #headerImage{
+            max-width:100%;
+            height:auto;
+            display:block;
+        }
+        .header-link-overlay{
+            position:absolute;
+            display:block;
+            border-radius:50%;
+            z-index:5;
+        }
+        #headerLinkTwitter{
+            top:65%;
+            left:9%;
+            width:10%;
+            height:18%;
+        }
+        #headerLinkfinalbosu{
+            top:65%;
+            left:26%;
+            width:10%;
+            height:18%;
+        }
+        .search-controls{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:10px;
+            margin-bottom:15px;
+            flex-wrap: wrap; /* Allow controls to wrap on smaller screens */
+        }
+        input[type="number"]{
+            padding:10px;
+            border:1px solid #ccc;
+            border-radius:4px;
+            flex:1 1 auto;
+            min-width:150px;
+            box-sizing:border-box;
+            font-size:1rem;
+            text-transform:none;
+            background-color:white;
+            color:#333;
+        }
+        input[type="number"]::placeholder{
+            text-transform:uppercase;
+            color:#999;
+        }
+        button,.action-button{
+            padding:10px 15px;
+            color:white;
+            border:none;
+            border-radius:4px;
+            cursor:pointer;
+            transition:background-color .2s ease-in-out,transform .1s ease;
+            font-size:1rem;
+            white-space:nowrap;
+        }
+        button:active,.action-button:active{
+            transform:translateY(1px);
+        }
+        #searchBtn,#downloadBtn,#gmBtn{
+            background-color:#0D98BA;
+        }
+        #searchBtn:hover,#downloadBtn:hover,#gmBtn:hover{
+            background-color:#0A7A9A;
+        }
+        #resetAppBtn{
+            background-color:#f0ad4e;
+        }
+        #resetAppBtn:hover{
+            background-color:#ec971f;
+        }
+        #result{
+            margin-top:10px;
+        }
+        .image-stack-container{
+            position:relative;
+            width:100%;
+            max-width:350px;
+            aspect-ratio:1 / 1;
+            margin:15px auto;
+            border-radius:8px;
+            overflow:hidden;
+        }
+        /* Base NFT Image */
+        #nftImage{
+            display:block;
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            border-radius:8px;
+            object-fit:contain;
+            pointer-events:none;
+            z-index:1; /* Base layer */
+            border:1px solid #ff8080;
+        }
+        /* Overlay Images */
+        .overlay-image {
+            display:block;
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            border-radius:8px;
+            object-fit:contain;
+            pointer-events:none; /* Clicks pass through */
+        }
+        /* Z-index for layering - ADJUSTED FOR AURA */
+        #mugOverlayImage {
+            z-index: 2; /* Below color, aura-below, hands, gloves */
+        }
+        #colorOverlayImage {
+            z-index: 3; /* Above mug, below aura-below, hands, gloves */
+        }
+        /* Aura images that go BELOW hands (for Aura #7) */
+        .aura-below-hands {
+            z-index: 3.5; /* Between color (3) and hands (4) */
+        }
+        #handsOverlayImage {
+            z-index: 4; /* Above color, aura-below, below gloves */
+        }
+        #glovesOverlayImage {
+            z-index: 5; /* On top of hands, below aura-above (new highest layer) */
+        }
+        /* Aura images that go ABOVE everything else (for Aura #1-6) */
+        .aura-above-hands {
+            z-index: 6; /* Changed from 4.5 to 6, placing it above gloves (5) */
+        }
+
+        .error{
+            color:#ffff00;
+            margin-top:10px;
+            font-size:.9em;
+            text-shadow: 1px 1px 2px black;
+        }
+        .loading{
+            margin-top:10px;
+            font-style:italic;
+            color:white;
+            text-shadow: 1px 1px 2px black;
+        }
+        #downloadBtn{
+            display:block;
+            width:-moz-fit-content;
+            width:fit-content;
+            margin-left:auto;
+            margin-right:auto;
+            margin-top:20px;
+        }
+
+        /* --- STYLES FOR GM SECTIONS --- */
+        .gm-section {
+            display: none; /* Hidden by default, toggled by GM button */
+            width: 100%;
+            max-width: 450px; /* Aligns with container width */
+            background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background as per image */
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px; /* Space from element above */
+            margin-bottom: 15px; /* Space from element below */
+            box-sizing: border-box; /* Include padding in width */
+            text-align: left; /* Align text within GM content */
+            margin-left: auto; /* Center the div */
+            margin-right: auto; /* Center the div */
+        }
+        .gm-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .gm-label {
+            background-color: #4CAF50; /* Green */
+            padding: 5px 8px; /* Original padding */
+            border-radius: 4px;
+            margin-right: 10px;
+            min-width: 70px; /* To align labels vertically */
+            text-align: center;
+            font-size: 0.9em; /* Original font size for labels */
+            flex-shrink: 0; /* Prevent label from shrinking on smaller screens */
+        }
+        .gm-numbers {
+            display: flex;
+            flex-wrap: wrap; /* Allow numbers to wrap to next line */
+            gap: 4px; /* Slightly smaller gap to help fit 13 numbers on one line */
+            flex-grow: 1; /* Allow numbers container to take available space */
+        }
+        .gm-numbers span {
+            background-color: #0D98BA; /* Blue */
+            padding: 5px 8px; /* Original padding */
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color .2s ease-in-out, border .2s ease;
+            font-size: 0.9em; /* Original font size for numbers */
+            line-height: 1; /* Adjust line height for better appearance */
+            user-select: none; /* Prevent text selection */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 24px; /* Slightly reduced min-width to help fit 13 on one line */
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .gm-numbers span:hover {
+            background-color: #0A7A9A;
+        }
+        /* Style for selected GM number */
+        .gm-numbers span.selected {
+            background-color: #F8B400; /* Yellowish-orange for selected as per image */
+            border: 1px solid #ffde00; /* Yellow border for selected */
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header-image-container">
+        <img id="headerImage" src="" alt="">
+        <a id="headerLinkTwitter" class="header-link-overlay" href="#" target="_blank" rel="noopener noreferrer" aria-label=""></a>
+        <a id="headerLinkfinalbosu" class="header-link-overlay" href="#" target="_blank" rel="noopener noreferrer" aria-label=""></a>
+    </div>
+    <div class="search-controls">
+        <input type="number" id="finalbosuIdInput" placeholder="YOUR BOSU ID" min="1" max="15000">
+        <button id="searchBtn">SEARCH</button>
+        <button id="gmBtn" class="action-button">GM</button>
+        <button id="resetAppBtn">RESET</button>
+    </div>
+
+    <!-- GM Content Top Section (initially hidden) -->
+    <div id="gmContentTop" class="gm-section">
+        <div class="gm-row">
+            <div class="gm-label">HANDS</div>
+            <div class="gm-numbers">
+                <span class="gm-number-item">1</span><span class="gm-number-item">2</span><span class="gm-number-item">3</span><span class="gm-number-item">4</span><span class="gm-number-item">5</span><span class="gm-number-item">6</span><span class="gm-number-item">7</span><span class="gm-number-item">8</span>
+            </div>
+        </div>
+        <div class="gm-row">
+            <div class="gm-label">GLOVES</div>
+            <div class="gm-numbers">
+                <span class="gm-number-item">1</span><span class="gm-number-item">2</span><span class="gm-number-item">3</span><span class="gm-number-item">4</span><span class="gm-number-item">5</span><span class="gm-number-item">6</span><span class="gm-number-item">7</span><span class="gm-number-item">8</span>
+            </div>
+        </div>
+        <div class="gm-row">
+            <div class="gm-label">AURA</div>
+            <div class="gm-numbers">
+                <span class="gm-number-item">1</span><span class="gm-number-item">2</span><span class="gm-number-item">3</span><span class="gm-number-item">4</span><span class="gm-number-item">5</span><span class="gm-number-item">6</span><span class="gm-number-item">7</span>
+            </div>
+        </div>
+    </div>
+    <!-- End GM Content Top Section -->
+
+    <div id="result">
+        <div id="loading" class="loading" style="display:none;">LOADING DATA...</div>
+        <div id="error" class="error"></div>
+        <div id="imageStackContainer" class="image-stack-container">
+            <img id="nftImage" src="" alt="">
+            <!-- New Overlay Images - Order matters for z-index and download -->
+            <img id="mugOverlayImage" class="overlay-image" src="" alt="Mug Overlay" style="display:none;">
+            <img id="colorOverlayImage" class="overlay-image" src="" alt="Color Overlay" style="display:none;">
+
+            <!-- Aura images that go BELOW hands (specifically for Aura #7) -->
+            <img id="auraBelowHandsOverlayImage1" class="overlay-image aura-below-hands" src="" alt="Aura Below Hands 1" style="display:none;">
+            <img id="auraBelowHandsOverlayImage2" class="overlay-image aura-below-hands" src="" alt="Aura Below Hands 2" style="display:none;">
+            <img id="auraBelowHandsOverlayImage3" class="overlay-image aura-below-hands" src="" alt="Aura Below Hands 3" style="display:none;">
+
+            <img id="handsOverlayImage" class="overlay-image" src="" alt="Hands Overlay" style="display:none;">
+
+            <img id="glovesOverlayImage" class="overlay-image" src="" alt="Gloves Overlay" style="display:none;">
+
+            <!-- Aura images that go ABOVE everything (for Aura #1-6) -->
+            <img id="auraAboveHandsOverlayImage1" class="overlay-image aura-above-hands" src="" alt="Aura Above Hands 1" style="display:none;">
+            <img id="auraAboveHandsOverlayImage2" class="overlay-image aura-above-hands" src="" alt="Aura Above Hands 2" style="display:none;">
+            <img id="auraAboveHandsOverlayImage3" class="overlay-image aura-above-hands" src="" alt="Aura Above Hands 3" style="display:none;">
+        </div>
+        <!-- GM Content Bottom Section (initially hidden) -->
+        <div id="gmContentBottom" class="gm-section">
+            <div class="gm-row">
+                <div class="gm-label">MUG</div>
+                <div class="gm-numbers">
+                    <span class="gm-number-item">1</span><span class="gm-number-item">2</span><span class="gm-number-item">3</span><span class="gm-number-item">4</span><span class="gm-number-item">5</span><span class="gm-number-item">6</span><span class="gm-number-item">7</span><span class="gm-number-item">8</span><span class="gm-number-item">9</span>
+                    <span class="gm-number-item">10</span><span class="gm-number-item">11</span><span class="gm-number-item">12</span><span class="gm-number-item">13</span>
+                </div>
+            </div>
+            <div class="gm-row">
+                <div class="gm-label">COLOR</div>
+                <div class="gm-numbers">
+                    <span class="gm-number-item">1</span><span class="gm-number-item">2</span><span class="gm-number-item">3</span><span class="gm-number-item">4</span><span class="gm-number-item">5</span><span class="gm-number-item">6</span><span class="gm-number-item">7</span><span class="gm-number-item">8</span><span class="gm-number-item">9</span>
+                    <span class="gm-number-item">10</span><span class="gm-number-item">11</span><span class="gm-number-item">12</span><span class="gm-number-item">13</span>
+                </div>
+            </div>
+        </div>
+        <!-- End GM Content Bottom Section -->
+        <button id="downloadBtn" class="action-button" style="display:none;">DOWNLOAD IMAGE</button>
+    </div>
+</div>
+
+<script>
+(function(D, W) {
+    // Helper function to decode Base64 URLs
+    const decodeB64 = (encodedString) => {
+        try {
+            return atob(encodedString);
+        } catch (e) {
+            console.error("Failed to decode Base64 string:", encodedString, e);
+            return ""; // Return empty string on error
+        }
+    };
+
+    // Constants Definition - NOW OBFUSCATED
+    const HEADER_IMAGE_URL_B64 = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL21haW4vSGlQYWludF8xNzQ4OTQ1NTU3MjM4LnBuZw==";
+    const TWITTER_WEB_URL_B64 = "aHR0cHM6Ly94LmNvbS9ub3JtaWV6X2V0aA==";
+    const BOSU_SITE_URL_B64 = "aHR0cHM6Ly93d3cuZmluYWxib3N1LmNvbS8=";
+    const PREVIEW_IMAGE_URL_B64 = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL21haW4vUHJpdmlldy5qcGc="; // Placeholder preview image
+    const PNG_EXTENSION = ".png";
+    // Direct URL for Finalbosu images
+    const BOSU_IMAGE_BASE_URL_B64 = "aHR0cHM6Ly9ib3N1LW1haW4uczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vaW1hZ2VzLw==";
+    const HANDS_IMAGE_BASE_URL_B64 = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL0hhbmRzLw==";
+    const MUG_IMAGE_BASE_URL_B64 = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL211Zy1jb2xvcnMv";
+    const GM_COLOR_IMAGE_BASE_URL_B64 = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL2dtLWNvbG9ycy8=";
+    const GLOVES_IMAGE_BASE_URL_B64 = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL0dsb3Zlcy8=";
+    const AURA_IMAGE_BASE_URL_B64 = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL0F1cmFzLw=="; // Base URL for Aura
+
+    // Specific Aura URLs - NOW OBFUSCATED
+    const AURA_URL_MAP_B64 = {
+        1: "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL0F1cmFzL0hpUGFpbnRfMTc0ODg2Mzc2Mjk5NC5wbmc=",
+        2: "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL0F1cmFzL0hpUGFpbnRfMTc0ODg2Mzc1NTg0OS5wbmc=",
+        3: "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL0F1cmFzL0hpUGFpbnRfMTc0ODg2Mzc1MDcxNC5wbmc=",
+        4: "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL0F1cmFzL0hpUGFpbnRfMTc0ODk0MjkwODgwOS5wbmc=",
+        5: "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL0F1cmFzL0hpUGFpbnRfMTc0ODg2Mzc0MzY5NC5wbmc=",
+        6: "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL0F1cmFzL0hpUGFpbnRfMTc0ODg2MzczODg1NS5wbmc=",
+        7: "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L0ZpbmFsYm9zdS9yZWZzL2hlYWRzL0F1cmFzL0hpUGFpbnRfMTc0ODg2MzA4NzAzOC5wbmc="
+    };
+    const MAX_AURA_SELECTIONS = 3; // Maximum number of Auras that can be selected
+
+    const CROSS_ORIGIN_ANONYMOUS = "Anonymous";
+    const IMAGE_PNG_MIME = "image/png";
+    const HEADER_IMAGE_ALT = "FINALBOSU NFT VIEWER BY NORMIEZ";
+    const ARIA_LABEL_TWITTER = "Visit normiez_eth on X";
+    const ARIA_LABEL_BOSU = "Visit finalbosu.com";
+    const BACKGROUND_IMAGE_URL_B64 = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3ppbzA2L2RlZ29kcy9yZWZzL2hlYWRzL2Fzc2V0cy9iYWNrZ3JvdW5kLmpwZw==";
+    const TWITTER_USERNAME = "normiez_eth";
+    const PREVIEW_IMAGE_ALT = "PREVIEW FINALBOSU IMAGE";
+
+    let currentFetchController = null;
+    let currentNftLoadId = 0;
+
+    // --- State for GM overlays ---
+    let currentHandsSelection = null;
+    let currentMugSelection = null;
+    let currentColorSelection = null;
+    let currentGlovesSelection = null;
+    let currentAuraSelections = []; // Changed to array for multiple selections
+
+    // --- DOM Elements ---
+    const finalbosuIdInput = D.getElementById('finalbosuIdInput');
+    const searchButton = D.getElementById('searchBtn');
+    const resetButton = D.getElementById('resetAppBtn');
+    const imageStackContainer = D.getElementById('imageStackContainer');
+    const nftImageElement = D.getElementById('nftImage');
+    const errorDiv = D.getElementById('error');
+    const loadingDiv = D.getElementById('loading');
+    const downloadButton = D.getElementById('downloadBtn');
+
+    const headerImage = D.getElementById('headerImage');
+    const headerLinkTwitter = D.getElementById('headerLinkTwitter');
+    const headerLinkBosu = D.getElementById('headerLinkfinalbosu');
+
+    // GM Specific Elements
+    const gmBtn = D.getElementById('gmBtn');
+    const gmContentTop = D.getElementById('gmContentTop');
+    const gmContentBottom = D.getElementById('gmContentBottom');
+    const mugOverlayImage = D.getElementById('mugOverlayImage');
+    const handsOverlayImage = D.getElementById('handsOverlayImage');
+    const colorOverlayImage = D.getElementById('colorOverlayImage');
+    const glovesOverlayImage = D.getElementById('glovesOverlayImage');
+
+    // Aura specific overlay images (multiple slots for display)
+    const auraBelowHandsOverlayImages = [
+        D.getElementById('auraBelowHandsOverlayImage1'),
+        D.getElementById('auraBelowHandsOverlayImage2'),
+        D.getElementById('auraBelowHandsOverlayImage3')
+    ];
+    const auraAboveHandsOverlayImages = [
+        D.getElementById('auraAboveHandsOverlayImage1'),
+        D.getElementById('auraAboveHandsOverlayImage2'),
+        D.getElementById('auraAboveHandsOverlayImage3')
+    ];
+
+    // --- Initial Setup ---
+    D.body.style.backgroundImage = `url('${decodeB64(BACKGROUND_IMAGE_URL_B64)}')`;
+
+    headerImage.src = decodeB64(HEADER_IMAGE_URL_B64);
+    headerImage.alt = HEADER_IMAGE_ALT;
+
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(W.navigator.userAgent);
+    if (isMobile) {
+        headerLinkTwitter.href = `twitter://user?screen_name=${TWITTER_USERNAME}`;
+    } else {
+        headerLinkTwitter.href = decodeB64(TWITTER_WEB_URL_B64);
+    }
+    headerLinkTwitter.setAttribute('aria-label', ARIA_LABEL_TWITTER);
+
+    headerLinkBosu.href = decodeB64(BOSU_SITE_URL_B64);
+    headerLinkBosu.setAttribute('aria-label', ARIA_LABEL_BOSU);
+
+    nftImageElement.src = decodeB64(PREVIEW_IMAGE_URL_B64);
+    nftImageElement.alt = PREVIEW_IMAGE_ALT;
+    imageStackContainer.style.display = 'block'; // Ensure preview image is shown on load
+
+    // --- Event Listeners ---
+    searchButton.addEventListener('click', fetchBosuNft);
+    resetButton.addEventListener('click', resetSearch);
+    downloadButton.addEventListener('click', handleDownload);
+    gmBtn.addEventListener('click', toggleGmContent);
+
+    finalbosuIdInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            fetchBosuNft();
+        }
+    });
+
+    // Event delegation for GM number clicks
+    gmContentTop.addEventListener('click', handleGmNumberClick);
+    gmContentBottom.addEventListener('click', handleGmNumberClick);
+
+    // --- Functions ---
+    function toggleGmContent() {
+        const isHidden = gmContentTop.style.display === 'none' || gmContentTop.style.display === '';
+        gmContentTop.style.display = isHidden ? 'block' : 'none';
+        gmContentBottom.style.display = isHidden ? 'block' : 'none';
+    }
+
+    function handleGmNumberClick(event) {
+        const clickedSpan = event.target;
+        if (clickedSpan.classList.contains('gm-number-item')) {
+            const categoryDiv = clickedSpan.closest('.gm-row').querySelector('.gm-label');
+            const category = categoryDiv.textContent.trim().toUpperCase();
+            const value = parseInt(clickedSpan.textContent);
+
+            if (isNaN(value)) return;
+
+            let currentSelectionState;
+            let overlayImageElement;
+            let baseImageUrl_b64;
+            let selectionVariable;
+            let isAura = false; // Flag for special Aura handling
+
+            switch (category) {
+                case 'HANDS':
+                    currentSelectionState = currentHandsSelection;
+                    overlayImageElement = handsOverlayImage;
+                    baseImageUrl_b64 = HANDS_IMAGE_BASE_URL_B64;
+                    selectionVariable = 'currentHandsSelection';
+                    break;
+                case 'MUG':
+                    currentSelectionState = currentMugSelection;
+                    overlayImageElement = mugOverlayImage;
+                    baseImageUrl_b64 = MUG_IMAGE_BASE_URL_B64;
+                    selectionVariable = 'currentMugSelection';
+                    break;
+                case 'COLOR':
+                    currentSelectionState = currentColorSelection;
+                    overlayImageElement = colorOverlayImage;
+                    baseImageUrl_b64 = GM_COLOR_IMAGE_BASE_URL_B64;
+                    selectionVariable = 'currentColorSelection';
+                    break;
+                case 'GLOVES':
+                    currentSelectionState = currentGlovesSelection;
+                    overlayImageElement = glovesOverlayImage;
+                    baseImageUrl_b64 = GLOVES_IMAGE_BASE_URL_B64;
+                    selectionVariable = 'currentGlovesSelection';
+                    break;
+                case 'AURA':
+                    isAura = true;
+                    // Handle Aura selection separately due to multiple allowed
+                    const index = currentAuraSelections.indexOf(value);
+                    if (index > -1) {
+                        // Aura already selected, deselect it
+                        currentAuraSelections.splice(index, 1);
+                        clickedSpan.classList.remove('selected');
+                    } else {
+                        // Aura not selected, try to add it
+                        if (currentAuraSelections.length < MAX_AURA_SELECTIONS) {
+                            currentAuraSelections.push(value);
+                            clickedSpan.classList.add('selected');
+                        } else {
+                            errorDiv.textContent = `MAX ${MAX_AURA_SELECTIONS} AURA SELECTIONS ALLOWED.`;
+                            setTimeout(() => errorDiv.textContent = '', 3000);
+                        }
+                    }
+                    // Re-apply all overlays to update Aura images
+                    applyCurrentOverlays();
+                    return; // Skip standard single-selection logic below
+                default:
+                    // For other categories, just highlight without overlay logic
+                    clickedSpan.closest('.gm-numbers').querySelectorAll('.gm-number-item').forEach(span => {
+                        span.classList.remove('selected');
+                    });
+                    clickedSpan.classList.add('selected');
+                    return;
+            }
+
+            // Standard single-selection logic for HANDS, MUG, COLOR, GLOVES
+            clickedSpan.closest('.gm-numbers').querySelectorAll('.gm-number-item').forEach(span => {
+                span.classList.remove('selected');
+            });
+
+            if (currentSelectionState === value) {
+                // Clicking the already selected item deselects it
+                if (selectionVariable === 'currentHandsSelection') currentHandsSelection = null;
+                else if (selectionVariable === 'currentMugSelection') currentMugSelection = null;
+                else if (selectionVariable === 'currentColorSelection') currentColorSelection = null;
+                else if (selectionVariable === 'currentGlovesSelection') currentGlovesSelection = null;
+                overlayImageElement.style.display = 'none';
+                overlayImageElement.src = ''; // Clear src
+            } else {
+                clickedSpan.classList.add('selected');
+                if (selectionVariable === 'currentHandsSelection') currentHandsSelection = value;
+                else if (selectionVariable === 'currentMugSelection') currentMugSelection = value;
+                else if (selectionVariable === 'currentColorSelection') currentColorSelection = value;
+                else if (selectionVariable === 'currentGlovesSelection') currentGlovesSelection = value;
+
+                // Only load and display overlay image if a base NFT is currently visible
+                if (nftImageElement.src && nftImageElement.src !== decodeB64(PREVIEW_IMAGE_URL_B64) && imageStackContainer.style.display === 'block') {
+                    overlayImageElement.src = `${decodeB64(baseImageUrl_b64)}${value}${PNG_EXTENSION}`;
+                    overlayImageElement.style.display = 'block';
+                } else {
+                    // If no base NFT is loaded, just update selection state but don't show overlay
+                    overlayImageElement.style.display = 'none';
+                    overlayImageElement.src = '';
+                    errorDiv.textContent = 'PLEASE SEARCH FOR A BOSU ID FIRST TO APPLY OVERLAYS.';
+                    setTimeout(() => errorDiv.textContent = '', 3000); // Clear message after 3 seconds
+                }
+            }
+        }
+    }
+
+    function clearFetchedDataUI(showPreview = false) {
+        if (showPreview) {
+            imageStackContainer.style.display = 'block';
+            nftImageElement.src = decodeB64(PREVIEW_IMAGE_URL_B64);
+            nftImageElement.alt = PREVIEW_IMAGE_ALT;
+        } else {
+            imageStackContainer.style.display = 'none';
+            nftImageElement.src = '';
+            nftImageElement.alt = 'finalbosu NFT';
+        }
+        nftImageElement.onload = null;
+        nftImageElement.onerror = null;
+        downloadButton.style.display = 'none';
+        errorDiv.textContent = '';
+        loadingDiv.style.display = 'none';
+
+        // Clear all overlays
+        mugOverlayImage.style.display = 'none'; mugOverlayImage.src = '';
+        handsOverlayImage.style.display = 'none'; handsOverlayImage.src = '';
+        colorOverlayImage.style.display = 'none'; colorOverlayImage.src = '';
+        glovesOverlayImage.style.display = 'none'; glovesOverlayImage.src = '';
+
+        // Clear all Aura overlays
+        auraBelowHandsOverlayImages.forEach(img => { img.style.display = 'none'; img.src = ''; });
+        auraAboveHandsOverlayImages.forEach(img => { img.style.display = 'none'; img.src = ''; });
+    }
+
+    function resetSearch() {
+        if (currentFetchController) {
+            currentFetchController.abort();
+            currentFetchController = null;
+        }
+        currentNftLoadId++;
+        finalbosuIdInput.value = '';
+        clearFetchedDataUI(true); // Show preview image
+        if (D.activeElement !== finalbosuIdInput) {
+             finalbosuIdInput.focus();
+        }
+        // Hide both GM sections on reset
+        gmContentTop.style.display = 'none';
+        gmContentBottom.style.display = 'none';
+
+        // Clear ALL GM selections (including Aura)
+        currentHandsSelection = null;
+        currentMugSelection = null;
+        currentColorSelection = null;
+        currentGlovesSelection = null;
+        currentAuraSelections = []; // Reset Aura selections
+
+        D.querySelectorAll('.gm-number-item').forEach(span => {
+            span.classList.remove('selected');
+        });
+    }
+
+    function applyCurrentOverlays() {
+        // Only apply if a base NFT is currently displayed (not the preview image)
+        if (nftImageElement.src && nftImageElement.src !== decodeB64(PREVIEW_IMAGE_URL_B64) && imageStackContainer.style.display === 'block') {
+            // Mug overlay
+            if (currentMugSelection !== null) {
+                mugOverlayImage.src = `${decodeB64(MUG_IMAGE_BASE_URL_B64)}${currentMugSelection}${PNG_EXTENSION}`;
+                mugOverlayImage.style.display = 'block';
+            } else {
+                mugOverlayImage.style.display = 'none';
+                mugOverlayImage.src = '';
+            }
+
+            // Color overlay
+            if (currentColorSelection !== null) {
+                colorOverlayImage.src = `${decodeB64(GM_COLOR_IMAGE_BASE_URL_B64)}${currentColorSelection}${PNG_EXTENSION}`;
+                colorOverlayImage.style.display = 'block';
+            } else {
+                colorOverlayImage.style.display = 'none';
+                colorOverlayImage.src = '';
+            }
+
+            // Hands overlay
+            if (currentHandsSelection !== null) {
+                handsOverlayImage.src = `${decodeB64(HANDS_IMAGE_BASE_URL_B64)}${currentHandsSelection}${PNG_EXTENSION}`;
+                handsOverlayImage.style.display = 'block';
+            } else {
+                handsOverlayImage.style.display = 'none';
+                handsOverlayImage.src = '';
+            }
+
+            // Gloves overlay
+            if (currentGlovesSelection !== null) {
+                glovesOverlayImage.src = `${decodeB64(GLOVES_IMAGE_BASE_URL_B64)}${currentGlovesSelection}${PNG_EXTENSION}`;
+                glovesOverlayImage.style.display = 'block';
+            } else {
+                glovesOverlayImage.style.display = 'none';
+                glovesOverlayImage.src = '';
+            }
+
+            // Aura overlays (multiple handling)
+            // First, hide all aura image elements
+            auraBelowHandsOverlayImages.forEach(img => { img.style.display = 'none'; img.src = ''; });
+            auraAboveHandsOverlayImages.forEach(img => { img.style.display = 'none'; img.src = ''; });
+
+            // Separate auras into 'below hands' (Aura #7) and 'above everything' (Aura #1-6)
+            const aurasBelow = currentAuraSelections.filter(id => id === 7);
+            const aurasAbove = currentAuraSelections.filter(id => id !== 7); // This correctly gets 1-6
+
+            aurasBelow.forEach((auraId, index) => {
+                if (index < auraBelowHandsOverlayImages.length) {
+                    const imgElement = auraBelowHandsOverlayImages[index];
+                    imgElement.src = decodeB64(AURA_URL_MAP_B64[auraId]);
+                    imgElement.style.display = 'block';
+                }
+            });
+
+            aurasAbove.forEach((auraId, index) => {
+                if (index < auraAboveHandsOverlayImages.length) {
+                    const imgElement = auraAboveHandsOverlayImages[index];
+                    imgElement.src = decodeB64(AURA_URL_MAP_B64[auraId]);
+                    imgElement.style.display = 'block';
+                }
+            });
+
+        } else {
+            // If no base NFT, hide all overlays
+            mugOverlayImage.style.display = 'none'; mugOverlayImage.src = '';
+            handsOverlayImage.style.display = 'none'; handsOverlayImage.src = '';
+            colorOverlayImage.style.display = 'none'; colorOverlayImage.src = '';
+            glovesOverlayImage.style.display = 'none'; glovesOverlayImage.src = '';
+            auraBelowHandsOverlayImages.forEach(img => { img.style.display = 'none'; img.src = ''; });
+            auraAboveHandsOverlayImages.forEach(img => { img.style.display = 'none'; img.src = ''; });
+        }
+    }
+
+
+    async function fetchBosuNft() {
+        const idValue = finalbosuIdInput.value.trim();
+        if (currentFetchController) currentFetchController.abort();
+        currentFetchController = new AbortController();
+        const { signal } = currentFetchController;
+        const localNftLoadId = ++currentNftLoadId;
+
+        if (!idValue) {
+            clearFetchedDataUI(true);
+            errorDiv.textContent = 'PLEASE ENTER A BOSU ID.';
+            loadingDiv.style.display = 'none';
+            if (currentFetchController.signal === signal) currentFetchController = null;
+            return;
+        }
+        clearFetchedDataUI(false); // Clear all previous images and errors
+        loadingDiv.style.display = 'block';
+        errorDiv.textContent = '';
+        const idNumber = parseInt(idValue);
+
+        if (isNaN(idNumber) || idNumber < 1 || idNumber > 15000) {
+            errorDiv.textContent = 'PLEASE ENTER A VALID ID (BETWEEN 1 AND 15000).';
+            loadingDiv.style.display = 'none';
+            clearFetchedDataUI(true); // Show preview image
+            if (currentFetchController.signal === signal) currentFetchController = null;
+            return;
+        }
+
+        const imageUrl = `${decodeB64(BOSU_IMAGE_BASE_URL_B64)}${idNumber}${PNG_EXTENSION}`;
+
+        const tempImage = new Image();
+        tempImage.crossOrigin = CROSS_ORIGIN_ANONYMOUS;
+
+        const imageLoadPromise = new Promise((resolve, reject) => {
+            tempImage.onload = () => {
+                if (localNftLoadId !== currentNftLoadId) return reject(new Error('Image load aborted by new request'));
+                resolve(tempImage);
+            };
+            tempImage.onerror = () => {
+                if (localNftLoadId !== currentNftLoadId) return reject(new Error('Image load aborted by new request'));
+                reject(new Error(`FAILED TO LOAD BOSU NFT IMAGE FOR ID ${idNumber}.`));
+            };
+            tempImage.src = imageUrl;
+
+            signal.onabort = () => {
+                tempImage.src = '';
+                reject(new Error('Image load aborted.'));
+            };
+        });
+
+        try {
+            await imageLoadPromise;
+
+            nftImageElement.src = imageUrl;
+            nftImageElement.alt = `finalbosu NFT #${idNumber}`;
+            loadingDiv.style.display = 'none';
+            imageStackContainer.style.display = 'block';
+            downloadButton.style.display = 'block';
+
+            applyCurrentOverlays(); // Apply any active overlays
+
+        } catch (err) {
+            if (err.message === 'Image load aborted by new request') {
+                if (localNftLoadId === currentNftLoadId) {
+                    loadingDiv.style.display = 'none';
+                    if (!finalbosuIdInput.value.trim() && imageStackContainer.style.display === 'none') {
+                         clearFetchedDataUI(true);
+                    }
+                }
+            } else if (err.message === 'Image load aborted.') {
+                if (localNftLoadId === currentNftLoadId) {
+                    loadingDiv.style.display = 'none';
+                    if (!finalbosuIdInput.value.trim() && imageStackContainer.style.display === 'none') {
+                         clearFetchedDataUI(true);
+                    }
+                }
+            }
+            else {
+                errorDiv.textContent = `AN ERROR OCCURRED: ${err.message.toUpperCase()}`;
+                clearFetchedDataUI(true);
+                loadingDiv.style.display = 'none';
+            }
+        } finally {
+            if (currentFetchController && currentFetchController.signal === signal) {
+                currentFetchController = null;
+            }
+        }
+    }
+
+    async function handleDownload() {
+        if (!nftImageElement.src || nftImageElement.src === decodeB64(PREVIEW_IMAGE_URL_B64) || imageStackContainer.style.display === 'none' || !nftImageElement.complete || nftImageElement.naturalWidth === 0) {
+            alert("ACTUAL NFT IMAGE NOT FULLY LOADED OR UNAVAILABLE FOR DOWNLOAD.");
+            return;
+        }
+
+        const canvas = D.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const TARGET_WIDTH = 1000;
+        const TARGET_HEIGHT = 1000;
+        canvas.width = TARGET_WIDTH;
+        canvas.height = TARGET_HEIGHT;
+
+        const idFilename = finalbosuIdInput.value || 'NFT';
+
+        // Function to draw an image onto the canvas, handles loading if not complete
+        const drawImageOnCanvas = (imgSrc) => {
+            return new Promise((resolve, reject) => {
+                if (!imgSrc) {
+                    return resolve(); // Nothing to draw for this element
+                }
+
+                const tempImg = new Image();
+                tempImg.crossOrigin = CROSS_ORIGIN_ANONYMOUS; // Ensure CORS for drawing to canvas
+
+                tempImg.onload = () => {
+                    const hRatio = TARGET_WIDTH / tempImg.naturalWidth;
+                    const vRatio = TARGET_HEIGHT / tempImg.naturalHeight;
+                    const ratio = Math.min(hRatio, vRatio);
+
+                    const scaledWidth = tempImg.naturalWidth * ratio;
+                    const scaledHeight = tempImg.naturalHeight * ratio;
+                    const offsetX = (TARGET_WIDTH - scaledWidth) / 2;
+                    const offsetY = (TARGET_HEIGHT - scaledHeight) / 2;
+
+                    ctx.drawImage(tempImg, offsetX, offsetY, scaledWidth, scaledHeight);
+                    resolve();
+                };
+
+                tempImg.onerror = () => {
+                    reject(new Error(`FAILED TO LOAD IMAGE FOR DOWNLOAD: ${imgSrc}`));
+                };
+
+                tempImg.src = imgSrc;
+            });
+        };
+
+        let filenameParts = [`BOSU_${idFilename}`];
+        try {
+            // 1. Draw base NFT (z-index 1)
+            await drawImageOnCanvas(nftImageElement.src);
+
+            // 2. Draw MUG overlay (z-index 2)
+            if (currentMugSelection !== null && mugOverlayImage.style.display !== 'none' && mugOverlayImage.src) {
+                await drawImageOnCanvas(mugOverlayImage.src);
+                filenameParts.push(`MUG-${currentMugSelection}`);
+            }
+
+            // 3. Draw COLOR overlay (z-index 3)
+            if (currentColorSelection !== null && colorOverlayImage.style.display !== 'none' && colorOverlayImage.src) {
+                await drawImageOnCanvas(colorOverlayImage.src);
+                filenameParts.push(`COLOR-${currentColorSelection}`);
+            }
+
+            // 4. Draw AURA overlays that go BELOW hands (Aura #7) (z-index 3.5)
+            const aurasBelow = currentAuraSelections.filter(id => id === 7);
+            for (const auraId of aurasBelow) {
+                await drawImageOnCanvas(decodeB64(AURA_URL_MAP_B64[auraId]));
+                filenameParts.push(`AURA-${auraId}`);
+            }
+
+            // 5. Draw HANDS overlay (z-index 4)
+            if (currentHandsSelection !== null && handsOverlayImage.style.display !== 'none' && handsOverlayImage.src) {
+                await drawImageOnCanvas(handsOverlayImage.src);
+                filenameParts.push(`HANDS-${currentHandsSelection}`);
+            }
+
+            // 6. Draw GLOVES overlay (z-index 5)
+            if (currentGlovesSelection !== null && glovesOverlayImage.style.display !== 'none' && glovesOverlayImage.src) {
+                await drawImageOnCanvas(glovesOverlayImage.src);
+                filenameParts.push(`GLOVES-${currentGlovesSelection}`);
+            }
+
+            // 7. Draw AURA overlays that go ABOVE everything (Aura #1-6) (z-index 6)
+            const aurasAbove = currentAuraSelections.filter(id => id !== 7); // This correctly filters for 1-6
+            for (const auraId of aurasAbove) {
+                await drawImageOnCanvas(decodeB64(AURA_URL_MAP_B64[auraId]));
+                filenameParts.push(`AURA-${auraId}`);
+            }
+
+            filenameParts.push(`${TARGET_WIDTH}X${TARGET_HEIGHT}${PNG_EXTENSION}`);
+            triggerCanvasDownload(canvas, filenameParts.join('_').replace(/__+/g, '_'));
+        } catch (e) {
+            alert("AN ERROR OCCURRED WHILE PREPARING THE IMAGE FOR DOWNLOAD: " + e.message);
+            console.error("Download preparation error:", e);
+        }
+    }
+
+    function triggerCanvasDownload(canvas, filename) {
+         try {
+            const dataURL = canvas.toDataURL(IMAGE_PNG_MIME);
+            const link = D.createElement('a');
+            link.href = dataURL;
+            link.download = filename;
+            D.body.appendChild(link);
+            link.click();
+            D.body.removeChild(link);
+        } catch (e) {
+            alert("FAILED TO CREATE IMAGE FOR DOWNLOAD. This can sometimes happen due to browser security restrictions (CORS) or canvas limits.");
+            console.error("Download error:", e);
+        }
+    }
+})(document, window);
+</script>
+
+</body>
+</html>
